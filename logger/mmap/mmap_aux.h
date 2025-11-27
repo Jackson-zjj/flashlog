@@ -27,23 +27,28 @@ public:
     double GetRatio() const;
 
 private:
+    struct MMapHeader {
+        static constexpr uint32_t kMagic = 0xdeadbeef;
+        uint32_t magic;
+        uint32_t size;
+    };
+
+private:
+    void Init_();
     void Reserve_(size_t size);
     void EnsureCapacity_(size_t new_size);
     bool TryMap_(size_t capacity);
     void Unmap_();
-    void Sync_();
 
+    MMapHeader* Header_() const;
     size_t Capacity_() const;
-    bool isValid() const;
+    bool isValid_() const;
 
 private:
     size_t capacity_;   // 文件大小
-    size_t size_;
-    void* handle_;
-    fpath file_path_;
-
-    // todo need add header?
-    // todo need check valid?
+    size_t size_;       // 内容大小（废弃）
+    void* handle_;      // mmap映射
+    fpath file_path_; 
 };
 
 }   //namespace logger
