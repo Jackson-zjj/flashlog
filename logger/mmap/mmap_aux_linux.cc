@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ScopeGuard.h"
+#include "scope_guard.h"
 
 namespace logger {
 
