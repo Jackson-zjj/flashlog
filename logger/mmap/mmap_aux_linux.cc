@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <iostream>
 
+#include "ScopeGuard.h"
+
 namespace logger {
 
 /// @brief linux下实现mmap
@@ -12,6 +14,12 @@ namespace logger {
 /// @return success
 bool MMapAux::TryMap_(size_t capacity) {
     int fd = open(file_path_.string().c_str(), O_RDWR | O_CREAT, S_IRWXU);
+    // 使用RAII机制确保fd的安全关闭
+    LOG_DELAY {
+        if (fd != -1) {
+            close(fd);
+        }
+    };
     if (fd == -1) {
         return false;
     }
@@ -19,7 +27,7 @@ bool MMapAux::TryMap_(size_t capacity) {
     ftruncate(fd, capacity);
 
     handle_ = mmap(NULL, capacity, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    close(fd);
+    // close(fd);
     return handle_ != MAP_FAILED;
 }
 
