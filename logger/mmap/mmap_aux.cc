@@ -10,7 +10,7 @@ namespace logger {
 
 constexpr size_t kDafaultCapacity = 512 * 1024;  // 512KB
 
-MMapAux::MMapAux(fpath file_path) : capacity_(0), size_(0), handle_(nullptr), file_path_(file_path) {
+MMapAux::MMapAux(fpath file_path) : capacity_(0), size_(0), handle_(nullptr), file_path_(std::move(file_path)) {
     size_t size = fs::GetFileSize(file_path);
     size_t new_size = std::max(size, kDafaultCapacity);
     Reserve_(new_size);
