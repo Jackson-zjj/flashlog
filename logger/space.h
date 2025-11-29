@@ -8,7 +8,7 @@ template <typename Rep, typename Capacity = std::ratio<1>>
 class space;
 
 template <typename ToSpace, typename Rep, typename Capacity>
-ToSpace space_cast(const space<Rep, Capacity>& s) {
+constexpr ToSpace space_cast(const space<Rep, Capacity>& s) {
     using to_ratio = std::ratio_divide<Capacity, typename ToSpace::period>;
     return ToSpace(s.count() * to_ratio::num / to_ratio::den);
 }
@@ -22,25 +22,25 @@ public:
     using rep = Rep;
     using period = Capacity;
 
-    space() : rep_() {};
+    constexpr space() : rep_() {};
     ~space() = default;
 
     template <typename Rep2>
-    explicit space(Rep2 r) : rep_(r) {};
+    explicit constexpr space(Rep2 r) : rep_(r) {};
 
     template <typename Rep2, typename Capacity2>
-    space(const space<Rep2, Capacity2>& other) : rep_(space_cast<space>(other).count()) {};
+    constexpr space(const space<Rep2, Capacity2>& other) : rep_(space_cast<space>(other).count()) {};
 
     // interface
-    Rep count() const {
+    constexpr Rep count() const {
         return rep_;
     };
 
     // operator func:+、-、++、--、+=、-=、*=、/=、%=
-    space operator+() const {
+    constexpr space operator+() const {
         return *this;
     };
-    space operator-() const {
+    constexpr space operator-() const {
         return space(-count());
     };
     space& operator++() {
@@ -88,12 +88,12 @@ private:
 };  // class space
 
 template <typename Rep, typename Capacity>
-space<Rep, Capacity> operator+(const space<Rep, Capacity>& s1, const space<Rep, Capacity>& s2) {
+constexpr space<Rep, Capacity> operator+(const space<Rep, Capacity>& s1, const space<Rep, Capacity>& s2) {
     return space<Rep, Capacity>(s1.count() + s2.count());
 }
 
 template <typename Rep, typename Capacity>
-space<Rep, Capacity> operator-(const space<Rep, Capacity>& s1, const space<Rep, Capacity>& s2) {
+constexpr space<Rep, Capacity> operator-(const space<Rep, Capacity>& s1, const space<Rep, Capacity>& s2) {
     return space<Rep, Capacity>(s1.count() - s2.count());
 }
 
