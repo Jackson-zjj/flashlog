@@ -19,3 +19,5 @@ target_link_libraries(flashlog PRIVATE
     GTest::gtest
     GTest::gtest_main
 )
+find_package(fmt REQUIRED)
+target_link_libraries(flashlog PRIVATE fmt::fmt)
