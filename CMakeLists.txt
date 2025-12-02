@@ -14,3 +14,8 @@ add_executable(flashlog ${SRC_LIST})
 
 add_subdirectory(logger)
 target_link_libraries(flashlog PRIVATE logger)
+find_package(GTest REQUIRED)
+target_link_libraries(flashlog PRIVATE 
+    GTest::gtest
+    GTest::gtest_main
+)
