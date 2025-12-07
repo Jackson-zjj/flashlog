@@ -14,11 +14,13 @@ else()
 endif()
 
 set(LOGGER_SRCS log_handle.cc internal_log.cc)
+set(SCHE_SRCS scheduler/thread_pool.cc)
 
 set(SRCS 
     ${UTIL_SRCS}
     ${MMAP_SRCS}
     ${LOGGER_SRCS}
+    ${SCHE_SRCS}
 )
 
 add_library(logger STATIC ${SRCS})
