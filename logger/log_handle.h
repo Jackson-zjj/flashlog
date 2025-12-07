@@ -18,9 +18,9 @@ using LogSinkPtrList = std::initializer_list<LogSinkPtr>;
 class LogHandle {
 public:
     // Construct
-    LogHandle(LogSinkPtr sink);
+    explicit LogHandle(LogSinkPtr sink);
 
-    LogHandle(LogSinkPtrList sinks);
+    explicit LogHandle(LogSinkPtrList sinks);
 
     template <typename It>
     LogHandle(It begin, It end) : sinks_(begin, end) {}

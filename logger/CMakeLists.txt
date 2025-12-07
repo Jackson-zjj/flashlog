@@ -13,9 +13,12 @@ else()
     message(FATAL_ERROR "unsupport") 
 endif()
 
+set(LOGGER_SRCS log_handle.cc)
+
 set(SRCS 
     ${UTIL_SRCS}
     ${MMAP_SRCS}
+    ${LOGGER_SRCS}
 )
 message(STATUS "SRCS ${SRCS}")
 

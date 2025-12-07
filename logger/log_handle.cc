@@ -37,7 +37,6 @@ inline bool LogHandle::ShouldLog(LogLevel level) const {
 void LogHandle::Log_(const LogMsg& msg) const {
     for (auto& sink : sinks_) {
         sink->Log(msg);
-        return;
     }
 }
 

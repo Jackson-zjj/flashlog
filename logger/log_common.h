@@ -8,8 +8,8 @@ namespace logger {
 using StringView = std::string_view;
 
 enum class LogLevel {
-    kInfo,
     kDebug,
+    kInfo,
     kWarn,
     kError,
     kOff
@@ -30,7 +30,7 @@ struct LogSourceLoc {
             file_name = file_name_in.substr(pos + 1);
 
         } else {
-            pos = file_name.rfind("//");
+            pos = file_name.rfind("\\");
             if (pos != StringView::npos) {
                 file_name = file_name_in.substr(pos + 1);
             }

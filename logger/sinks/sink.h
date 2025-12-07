@@ -10,8 +10,6 @@ public:
 
     // public interact
     void Log(const LogMsg&);
-
-private:
     
 
 };  // class sink
