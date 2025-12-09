@@ -6,6 +6,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_BUILD_TYPE Debug)  # 强制使用 Debug 模式
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")  # -g 生成调试信息，-O0 关闭优化（避免断点错位）
 
+add_compile_definitions(DEBUGMODE=1)
+
 set(INCLUDES . ${CMAKE_BINARY_DIR} logger)
 include_directories(${INCLUDES})
 
@@ -14,10 +16,9 @@ add_executable(flashlog ${SRC_LIST})
 
 add_subdirectory(logger)
 target_link_libraries(flashlog PRIVATE logger)
+
+# 第三方库
 find_package(GTest REQUIRED)
-target_link_libraries(flashlog PRIVATE 
-    GTest::gtest
-    GTest::gtest_main
-)
+target_link_libraries(flashlog PRIVATE GTest::gtest_main)
 find_package(fmt REQUIRED)
 target_link_libraries(flashlog PRIVATE fmt::fmt)
