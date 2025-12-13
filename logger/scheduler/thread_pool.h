@@ -31,7 +31,8 @@ public:
     void AddTask(F&& func, Args&&... args);
     
     template <typename F, typename... Args>
-    std::shared_future<std::invoke_result_t<F, Args...>> AddReturnTask(F&& func, Args&&... args);
+    auto AddReturnTask(F&& func, Args&&... args)
+        -> std::shared_future<std::invoke_result_t<F, Args...>>;
 
 private:
     // private interface
