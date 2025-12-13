@@ -3,6 +3,8 @@
 #include <utility>
 #include <string>
 
+#include <fmt/format.h>
+
 namespace logger {
 
 using StringView = std::string_view;

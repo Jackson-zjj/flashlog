@@ -13,7 +13,7 @@ else()
     message(FATAL_ERROR "unsupport") 
 endif()
 
-set(LOGGER_SRCS log_handle.cc)
+set(LOGGER_SRCS handler/log_handle.cc)
 set(TASK_SRCS scheduler/thread_pool.cc scheduler/scheduler.cc)
 
 set(SRCS 
