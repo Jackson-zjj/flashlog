@@ -15,7 +15,7 @@ int add(int a, int b) {
 TEST(ThreadPoolTest, CreateFunc) {
     logger::ThreadPool t(10);
     t.Start();
-    t.addTask(print);
-    EXPECT_EQ(t.addReturnTask(add, 2, 3).get(), 5);
-    EXPECT_EQ(t.addReturnTask(add, 10, 20).get(), 30);
+    t.AddTask(print);
+    EXPECT_EQ(t.AddReturnTask(add, 2, 3).get(), 5);
+    EXPECT_EQ(t.AddReturnTask(add, 10, 20).get(), 30);
 }

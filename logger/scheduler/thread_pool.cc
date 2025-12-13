@@ -12,7 +12,7 @@ void ThreadPool::Start() {
     if (!is_running_.load()) {
         is_running_.store(true);
         for (int i = 0; i < thread_count_.load(); i++) {
-            addThread();
+            AddThread();
         }
     }
 }
@@ -25,7 +25,7 @@ void ThreadPool::Stop() {
     thread_vector_.clear();
 }
 
-void ThreadPool::addThread() {
+void ThreadPool::AddThread() {
     auto func = [this](){
         while(true) {
             // 提取task并执行
@@ -47,9 +47,9 @@ void ThreadPool::addThread() {
             task();
         }
     };
-    ThreadInfoPtr t_I_ptr = std::make_shared<ThreadInfo>();
-    t_I_ptr->t_Ptr = std::make_shared<std::thread>(std::move(func));
-    thread_vector_.emplace_back(t_I_ptr);
+    ThreadInfoPtr ptr = std::make_shared<ThreadInfo>();
+    ptr->t_Ptr = std::make_shared<std::thread>(std::move(func));
+    thread_vector_.emplace_back(ptr);
 }
 
 }   // namespace logger
