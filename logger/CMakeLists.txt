@@ -13,23 +13,17 @@ else()
     message(FATAL_ERROR "unsupport") 
 endif()
 
-set(LOGGER_SRCS log_handle.cc internal_log.cc)
-set(SCHE_SRCS scheduler/thread_pool.cc)
+set(LOGGER_SRCS log_handle.cc)
+set(TASK_SRCS scheduler/thread_pool.cc scheduler/scheduler.cc)
 
 set(SRCS 
     ${UTIL_SRCS}
     ${MMAP_SRCS}
     ${LOGGER_SRCS}
-    ${SCHE_SRCS}
+    ${TASK_SRCS}
 )
 
 add_library(logger STATIC ${SRCS})
 
 find_package(fmt REQUIRED)
 target_link_libraries(logger PRIVATE fmt::fmt)
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(logger PRIVATE -include ${CMAKE_SOURCE_DIR}/logger/internal_log.h)
-elseif (MSVC)
-    target_compile_options(logger PRIVATE /FI${CMAKE_SOURCE_DIR}/logger/internal_log.h)
-endif()

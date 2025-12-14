@@ -17,6 +17,8 @@ TEST(MMapClassTest, DataFunc) {
     str.assign(reinterpret_cast<const char*>(m1.Data()), m1.Size());
     EXPECT_FALSE(m1.Empty());
     EXPECT_STREQ(str.c_str(), "Hello, World");
+
+    m1.Clear();
 }
 
 TEST(MMapClassTest, SizeFunc) {
@@ -34,4 +36,6 @@ TEST(MMapClassTest, SizeFunc) {
     m1.Push("Hello", sizeof("Hello"));
     EXPECT_GT(m1.Size(), 100);
     EXPECT_LT(m1.GetRatio(), 1);
+
+    m1.Clear();
 }

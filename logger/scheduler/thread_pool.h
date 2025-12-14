@@ -28,14 +28,15 @@ public:
     void Stop();
 
     template <typename F, typename... Args>
-    void addTask(F&& func, Args&&... args);
+    void AddTask(F&& func, Args&&... args);
     
     template <typename F, typename... Args>
-    std::shared_future<std::invoke_result_t<F, Args...>> addReturnTask(F&& func, Args&&... args);
+    auto AddReturnTask(F&& func, Args&&... args)
+        -> std::shared_future<std::invoke_result_t<F, Args...>>;
 
 private:
     // private interface
-    void addThread();
+    void AddThread();
 
     // private typedef
     struct ThreadInfo;
@@ -61,7 +62,7 @@ private:
 };// class ThreadPool
 
 template <typename F, typename... Args>
-void ThreadPool::addTask(F&& func, Args&&... args) {
+void ThreadPool::AddTask(F&& func, Args&&... args) {
     Task task = std::bind(std::forward<F>(func), std::forward<Args>(args)...);
     {
         std::lock_guard<std::mutex> lock(this->mtx_);
@@ -71,7 +72,7 @@ void ThreadPool::addTask(F&& func, Args&&... args) {
 }
 
 template <typename F, typename... Args>
-auto ThreadPool::addReturnTask(F&& func, Args&&... args) -> std::shared_future<std::invoke_result_t<F, Args...>> {
+auto ThreadPool::AddReturnTask(F&& func, Args&&... args) -> std::shared_future<std::invoke_result_t<F, Args...>> {
    using r_type = std::invoke_result_t<F, Args...>;
    auto task = std::bind(std::forward<F>(func), std::forward<Args>(args)...);
    auto r_task = std::make_shared<std::packaged_task<r_type()>>(task);
