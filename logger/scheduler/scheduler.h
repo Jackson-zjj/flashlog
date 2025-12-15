@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -5,7 +7,7 @@
 #include <mutex>
 #include <chrono>
 
-#include <scheduler/thread_pool.h>
+#include "scheduler/thread_pool.h"
 
 namespace logger {
 
