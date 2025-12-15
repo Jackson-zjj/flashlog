@@ -21,7 +21,7 @@ public:
 
 private:
     template <typename... Args>
-    void Log_(LogLevel lvl, LogSourceLoc& loc, fmt::basic_string_view<char> fmt, Args&&... args){
+    void Log_(LogLevel lvl, LogSourceLoc loc, fmt::basic_string_view<char> fmt, Args&&... args){
         if (!ShouldLog(lvl)) {
             return;
         }

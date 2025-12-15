@@ -1,6 +1,7 @@
 #include "utils/sys_util.h"
 
 #include <unistd.h>
+#include <sys/syscall.h>
 
 namespace logger {
 
@@ -13,7 +14,7 @@ size_t GetProcessId() {
 }
 
 size_t GetThreadId() {
-  return static_cast<size_t>(::gettid());
+    return static_cast<size_t>(syscall(SYS_thread_selfid));
 }
 
 }   // namespace logger

@@ -10,4 +10,12 @@ size_t GetPageSize() {
     return info.dwPageSize;
 }
 
+size_t GetProcessId() {
+  return static_cast<size_t>(::GetCurrentProcessId());
+}
+
+size_t GetThreadId() {
+  return static_cast<size_t>(::GetCurrentThreadId());
+}
+
 }   // namespace logger

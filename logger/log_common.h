@@ -8,6 +8,7 @@
 namespace logger {
 
 using StringView = std::string_view;
+using MemoryBuf = std::string;
 
 enum class LogLevel {
     kDebug,
