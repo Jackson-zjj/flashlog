@@ -3,9 +3,12 @@
 #include <utility>
 #include <string>
 
+#include <fmt/format.h>
+
 namespace logger {
 
 using StringView = std::string_view;
+using MemoryBuf = std::string;
 
 enum class LogLevel {
     kDebug,
