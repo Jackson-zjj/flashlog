@@ -32,6 +32,7 @@ set(LOGGER_SRCS handler/log_handle.cc)
 set(TASK_SRCS scheduler/thread_pool.cc scheduler/scheduler.cc)
 set(COMPRESS_SRCS compress/zlib_compress.cc compress/zstd_compress.cc)
 set(CRYPTO_SRCS crypto/crypto.cc crypto/aes_crypto.cc)
+set(PROTO_SRCS proto/person.pb.cc)
 
 set(SRCS 
     ${UTIL_SRCS}
@@ -42,6 +43,7 @@ set(SRCS
     ${TASK_SRCS}
     ${COMPRESS_SRCS}
     ${CRYPTO_SRCS}
+    ${PROTO_SRCS}
 )
 
 add_library(logger STATIC ${SRCS})
