@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "fmt/core.h"
-#include "logger/proto/person.pb.h"
+#include "person.pb.h"
 
 TEST(ThirdPartyTest, FmtFunc) {
     EXPECT_EQ(fmt::format("Hello, {}", "World!"), "Hello, World!");
