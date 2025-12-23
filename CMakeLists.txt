@@ -8,18 +8,16 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")  # -g 生成调试信息，-O0 关闭优化�
 
 add_compile_definitions(DEBUGMODE=1)
 
+find_package(GTest REQUIRED)
+
 set(INCLUDES . ${CMAKE_BINARY_DIR} logger)
 include_directories(${INCLUDES})
+
+add_subdirectory(logger)
+add_subdirectory(example)
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC_LIST)
 add_executable(flashlog ${SRC_LIST})
 
-add_subdirectory(logger)
 target_link_libraries(flashlog PRIVATE logger)
-add_subdirectory(example)
-
-# 第三方库
-find_package(GTest REQUIRED)
 target_link_libraries(flashlog PRIVATE GTest::gtest_main)
-find_package(fmt REQUIRED)
-target_link_libraries(flashlog PRIVATE fmt::fmt)

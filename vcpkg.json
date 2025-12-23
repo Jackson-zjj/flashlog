@@ -1,6 +1,10 @@
 {
     "dependencies": [
         "gtest",
-        "fmt"
+        "fmt",
+        "zstd",
+        "zlib",
+        "cryptopp",
+        "protobuf"
     ]
 }
