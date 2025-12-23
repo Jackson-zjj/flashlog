@@ -26,20 +26,20 @@ else()
     message(FATAL_ERROR "unsupport") 
 endif()
 
-set(FORMATTER_SCRS formatter/default_formatter.cc)
-set(SINK_SRCS sinks/console_sink.cc)
-set(LOGGER_SRCS handler/log_handle.cc)
-set(TASK_SRCS scheduler/thread_pool.cc scheduler/scheduler.cc)
-set(COMPRESS_SRCS compress/zlib_compress.cc compress/zstd_compress.cc)
-set(CRYPTO_SRCS crypto/crypto.cc crypto/aes_crypto.cc)
-set(PROTO_SRCS proto/person.pb.cc)
+file(GLOB FORMATTER_SCRS formatter/*.cc)
+file(GLOB SINK_SRCS sinks/*.cc)
+file(GLOB HANDLER_SRCS handler/*.cc)
+file(GLOB TASK_SRCS scheduler/*.cc)
+file(GLOB COMPRESS_SRCS compress/*.cc)
+file(GLOB CRYPTO_SRCS crypto/*.cc)
+file(GLOB PROTO_SRCS ${CMAKE_BINARY_DIR}/*.cc)
 
 set(SRCS 
     ${UTIL_SRCS}
     ${MMAP_SRCS}
     ${FORMATTER_SCRS}
     ${SINK_SRCS}
-    ${LOGGER_SRCS}
+    ${HANDLER_SRCS}
     ${TASK_SRCS}
     ${COMPRESS_SRCS}
     ${CRYPTO_SRCS}
