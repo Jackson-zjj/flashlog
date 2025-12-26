@@ -20,7 +20,7 @@ static bool IsCompressed(const void* data, size_t size) {
 }
 
 size_t ZlibCompress::CompressBound(size_t input_size) {
-    return input_size + 10;
+    return compressBound(input_size);
 }
 
 size_t ZlibCompress::Compress(const void* input, size_t input_size, void* output, size_t output_size) {
