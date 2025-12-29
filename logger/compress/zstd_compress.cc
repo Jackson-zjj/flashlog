@@ -74,8 +74,8 @@ std::string ZstdCompress::Decompress(const void* data, size_t size) {
     if (!data || size == 0) {
         return "";
     }
-    if (!IsZSTDCompress(data, size)) {
-        return "";
+    if (IsZSTDCompress(data, size)) {
+        ResetDecompressStream_();
     }
 
     std::string output;
@@ -85,7 +85,7 @@ std::string ZstdCompress::Decompress(const void* data, size_t size) {
     
     size_t ret = ZSTD_decompressStream(dctx_, &out_buffer, &in_buffer);
     if (ZSTD_isError(ret) != 0) {
-    return "";
+        return "";
     }
     output = std::string(reinterpret_cast<char*>(out_buffer.dst), out_buffer.pos);
     return output;

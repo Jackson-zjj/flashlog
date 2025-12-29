@@ -13,13 +13,14 @@ public:
 
     static std::string GenerateKey();
 
-    static std::string GenerateIV();
 
-    void Encrypto(const void* data, size_t size, std::string& output) override;
+    void Encrypt(const void* data, size_t size, std::string& output) override;
 
-    std::string Decrypto(const void* data, size_t size) override;
+    std::string Decrypt(const void* data, size_t size) override;
 
 private:
+    std::string GenerateIV_();
+
     std::string key_;
     std::string iv_;
 

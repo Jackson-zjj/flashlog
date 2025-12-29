@@ -41,9 +41,9 @@ int main() {
   std::string input = "hello, world!";
   std::string output;
   output.clear();
-  aes.Encrypto(input.data(), input.size(), output);
+  aes.Encrypt(input.data(), input.size(), output);
   std::cout << "secert content:: " << output << std::endl;
-  std::string decrypted = aes.Decrypto(output.data(), output.size());
+  std::string decrypted = aes.Decrypt(output.data(), output.size());
   std::cout << "decrypted: " << decrypted << std::endl;
   return 0;
 }

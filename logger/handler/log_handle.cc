@@ -22,7 +22,7 @@ inline LogLevel LogHandle::GetLevel() const {
     return level_;
 }
 
-void LogHandle::Log(LogLevel level, LogSourceLoc& loc, StringView& msg_str) const {
+void LogHandle::Log(LogLevel level, LogSourceLoc loc, StringView msg_str) const {
     if (!ShouldLog(level)) {
         return;
     }

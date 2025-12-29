@@ -36,7 +36,7 @@ public:
 
     LogLevel GetLevel() const;
 
-    void Log(LogLevel, LogSourceLoc&, StringView&) const;
+    void Log(LogLevel, LogSourceLoc, StringView) const;
 
 protected: 
     bool ShouldLog(LogLevel) const;

@@ -1,32 +1,34 @@
 #include <gtest/gtest.h>
 #include "space.h"
 
+using namespace logger;
+
 TEST(SpaceClassTest, ConstructFunc) {
-    logger::B s1;
+    space::B s1;
     EXPECT_EQ(s1.count(), 0);
 
-    logger::MB s2(10);
+    space::MB s2(10);
     EXPECT_EQ(s2.count(), 10);
 
-    logger::GB s3(20);
+    space::GB s3(20);
     EXPECT_EQ(s3.count(), 20);
 
-    logger::TB s4(30);
+    space::TB s4(30);
     EXPECT_EQ(s4.count(), 30);
 }
 
 TEST(SpaceClassTest, CastFunc) {
-    logger::B s1(1024 * 1024);
-    EXPECT_EQ(logger::space_cast<logger::KB>(s1).count(), 1024);
-    EXPECT_EQ(logger::space_cast<logger::MB>(s1).count(), 1);
-    EXPECT_EQ(logger::space_cast<logger::GB>(s1).count(), 1/1024);
+    space::B s1(1024 * 1024);
+    EXPECT_EQ(space::space_cast<space::KB>(s1).count(), 1024);
+    EXPECT_EQ(space::space_cast<space::MB>(s1).count(), 1);
+    EXPECT_EQ(space::space_cast<space::GB>(s1).count(), 1/1024);
 
-    logger::TB s2(1);
-    EXPECT_EQ(logger::space_cast<logger::GB>(s2).count(), 1024);
+    space::TB s2(1);
+    EXPECT_EQ(space::space_cast<space::GB>(s2).count(), 1024);
 }
 
 TEST(SpaceClassTest, OperatorFunc) {
-    logger::B s1(1);
+    space::B s1(1);
     EXPECT_EQ((+s1).count(), 1);
     EXPECT_EQ((-s1).count(), -1);
     EXPECT_EQ((++s1).count(), 2);
@@ -34,7 +36,7 @@ TEST(SpaceClassTest, OperatorFunc) {
     EXPECT_EQ((--s1).count(), 2);
     EXPECT_EQ((s1--).count(), 2);
 
-    logger::KB s2(1);
+    space::KB s2(1);
     EXPECT_EQ((s1 += s2).count(), 1025);
     EXPECT_EQ((s1 -= s2).count(), 1);
     EXPECT_EQ((s1 *= 30).count(), 30);
