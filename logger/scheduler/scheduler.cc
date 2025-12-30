@@ -64,7 +64,7 @@ void Scheduler::Timer::Run_() {
                 s.task();
             }
             catch(const std::exception& e) {
-                LOG_ERROR("task run error[{}] \n", e.what());
+                ERROR("task run error[{}] \n", e.what());
             }
             
         }

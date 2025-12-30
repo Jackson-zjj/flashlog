@@ -20,7 +20,7 @@ namespace logger {
 constexpr char kFileSuffix[] = ".log";
 
 EffectiveSink::EffectiveSink(Conf conf) : conf_(std::move(conf)) {
-  LOG_INFO("EffectiveSink: file_dir={}, file_name={}, server_pub_key={}, interval={}, single_size={}, total_size={}",
+    INFO("EffectiveSink: file_dir={}, file_name={}, server_pub_key={}, interval={}, single_size={}, total_size={}",
            conf_.file_dir.string(), conf_.file_name, conf_.server_pub_key, conf_.interval.count(), conf_.single_size.count(),
            conf_.total_size.count());
 
@@ -33,7 +33,7 @@ EffectiveSink::EffectiveSink(Conf conf) : conf_(std::move(conf)) {
     auto keys = crypto::GenECDHKey();
     client_pri_key_ = std::get<0>(keys);
     client_pub_key_ = std::get<1>(keys);
-    LOG_INFO("EffectiveSink: client pub size {}", client_pub_key_.size());
+    INFO("EffectiveSink: client pub size {}", client_pub_key_.size());
     auto server_pub_key = crypto::HexKeyToBinary(conf_.server_pub_key);
     auto shared_key = crypto::GenECDHSharedKey(client_pri_key_, server_pub_key);
     auto crypto_iv = crypto::AESCrypto::GenerateIV();
@@ -74,7 +74,7 @@ void EffectiveSink::Log(const LogMsg& msg) {
         size_t compress_size = compress_->Compress(format_buf.data(), format_buf.size(), compress_buf_.data(), compress_buf_.capacity());
         if (compress_size == 0) {
             // todo
-            LOG_ERROR("EffectiveSink::Log: compress failed");
+            ERROR("EffectiveSink::Log: compress failed");
             return;
         }
 
@@ -82,7 +82,7 @@ void EffectiveSink::Log(const LogMsg& msg) {
         encrypt_buf_.reserve(compress_size + 10);
         crypto_->Encrypt(compress_buf_.data(), compress_size, encrypt_buf_);
         if (encrypt_buf_.empty()) {
-            LOG_ERROR("EffectiveSink::Log: encrypt failed");
+            ERROR("EffectiveSink::Log: encrypt failed");
             return;
         }
 
@@ -202,7 +202,7 @@ std::filesystem::path EffectiveSink::GetFilePath_() {
 }
 
 void EffectiveSink::EliminateFiles_() {
-    LOG_INFO("EffectiveSink::EliminateFiles_: start");
+    INFO("EffectiveSink::EliminateFiles_: start");
     std::vector<std::filesystem::path> files;
     for (const auto& file : std::filesystem::directory_iterator(conf_.file_dir)) {
         if (file.path().extension() == kFileSuffix) {
@@ -219,7 +219,7 @@ void EffectiveSink::EliminateFiles_() {
         if (cur_total_size < total_size) {
             cur_total_size += fs::GetFileSize(file);
         } else {
-            LOG_INFO("EffectiveSink::EliminateFiles_: remove file = {}", file.string());
+            INFO("EffectiveSink::EliminateFiles_: remove file = {}", file.string());
             std::filesystem::remove(file);
         }
     }
