@@ -26,6 +26,7 @@ struct ChunkHeader {
     static constexpr uint64_t kMagic = 0xdeadbeefdada1100;
     uint64_t magic;
     uint64_t size;
+    char iv[32];
     char pub_key[128];
 
     ChunkHeader() : magic(kMagic), size(0) {}

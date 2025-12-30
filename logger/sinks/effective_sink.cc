@@ -36,7 +36,8 @@ EffectiveSink::EffectiveSink(Conf conf) : conf_(std::move(conf)) {
     LOG_INFO("EffectiveSink: client pub size {}", client_pub_key_.size());
     auto server_pub_key = crypto::HexKeyToBinary(conf_.server_pub_key);
     auto shared_key = crypto::GenECDHSharedKey(client_pri_key_, server_pub_key);
-    crypto_ = std::make_unique<crypto::AESCrypto>(shared_key);
+    auto crypto_iv = crypto::AESCrypto::GenerateIV();
+    crypto_ = std::make_unique<crypto::AESCrypto>(shared_key, crypto_iv);
     master_mmap_ = std::make_unique<MMapAux>(conf_.file_dir / "master_mmap");
     slave_mmap_ = std::make_unique<MMapAux>(conf_.file_dir / "slave_mmap");
     if (!master_mmap_ || !slave_mmap_) {
@@ -153,6 +154,10 @@ void EffectiveSink::CacheToFile_() {
     detail::ChunkHeader chunk_header;
     chunk_header.size = slave_mmap_->Size();
     memcpy(chunk_header.pub_key, client_pub_key_.data(), client_pub_key_.size());
+    if (auto aes_crypto_ptr = dynamic_cast<crypto::AESCrypto*>(crypto_.get())) {
+        auto crypto_iv = aes_crypto_ptr->GetIV();
+        memcpy(chunk_header.iv, crypto_iv.data(), crypto_iv.size());
+    }
     
     auto file_path = GetFilePath_();
     std::ofstream ofs(file_path, std::ios::binary | std::ios::app);

@@ -15,10 +15,6 @@ namespace crypto {
 
 using CryptoPP::byte;
 
-AESCrypto::AESCrypto(std::string key) : key_(key) {
-    iv_ = GenerateIV_();
-}
-
 std::string AESCrypto::GenerateKey() {
     CryptoPP::AutoSeededRandomPool random;
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH];
@@ -27,11 +23,15 @@ std::string AESCrypto::GenerateKey() {
 }
 
 /// @brief 生成初始化向量，用于保障加密安全性
-std::string AESCrypto::GenerateIV_() {
+std::string AESCrypto::GenerateIV() {
     CryptoPP::AutoSeededRandomPool random;
     byte iv[CryptoPP::AES::BLOCKSIZE];
     random.GenerateBlock(iv, sizeof(iv));
     return BinaryKeyToHex(std::string(reinterpret_cast<const char*>(iv), sizeof(iv)));
+}
+
+std::string AESCrypto::GetIV() {
+    return iv_;
 }
 
 void AESCrypto::Encrypt(const void* data, size_t size, std::string& output) {

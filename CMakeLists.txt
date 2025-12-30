@@ -15,6 +15,7 @@ include_directories(${INCLUDES})
 
 add_subdirectory(logger)
 add_subdirectory(example)
+add_subdirectory(decode)
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC_LIST)
 add_executable(flashlog ${SRC_LIST})

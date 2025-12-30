@@ -12,6 +12,9 @@ int main() {
   auto aes_key = logger::crypto::AESCrypto::GenerateKey();
   std::cout << "aes_key: " << aes_key << std::endl;
 
+  auto aes_iv = logger::crypto::AESCrypto::GenerateIV();
+  std::cout << "aes_iv: " << aes_iv << std::endl;
+
   auto ecdh_key2 = logger::crypto::GenECDHKey();
   auto server_pri = std::get<0>(ecdh_key2);
   auto server_pub = std::get<1>(ecdh_key2);
@@ -37,7 +40,7 @@ int main() {
   auto shared_key_hex = logger::crypto::BinaryKeyToHex(client_shared_key);
   std::cout << "shared_key_hex: " << shared_key_hex << std::endl;
 
-  logger::crypto::AESCrypto aes(client_shared_key);
+  logger::crypto::AESCrypto aes(client_shared_key, aes_iv);
   std::string input = "hello, world!";
   std::string output;
   output.clear();
