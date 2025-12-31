@@ -13,7 +13,7 @@ namespace logger {
 
 using Executor = logger::ThreadPool;
 using ExecutorPtr = std::unique_ptr<Executor>;
-using ExecutorTag = std::string_view;
+using ExecutorTag = uint64_t;
 
 /// @brief 任务调度器（管理任务执行器）
 class Scheduler {
@@ -31,7 +31,7 @@ public:
     }
 
     /// @brief 创建执行器
-    void NewTaskExecutor(ExecutorTag tag, int thread_count = 1);
+    ExecutorTag NewTaskExecutor(ExecutorTag tag, int thread_count = 1);
 
     /// @brief 提交任务
     template <typename F, typename... Args>
@@ -111,7 +111,8 @@ private:
 
     // Scheduler private
     Scheduler() = default;
-    Executor* GetOrAddExecutor(ExecutorTag);
+    ExecutorTag GetNextExecutorTag_(ExecutorTag);
+    Executor* GetExecutorByTag(ExecutorTag);
 
     std::mutex mtx_;
     std::unordered_map<ExecutorTag, ExecutorPtr> executor_dirc_;
@@ -120,13 +121,13 @@ private:
 
 template <typename F, typename... Args>
 void Scheduler::PostTask(ExecutorTag tag, F&& func, Args&&... args) {
-    Executor* executor = GetOrAddExecutor(tag);
+    Executor* executor = GetExecutorByTag(tag);
     executor->AddTask(std::forward<F>(func), std::forward<Args>(args)...);
 }
 
 template <typename F, typename... Args>
 auto Scheduler::PostTaskAndGetResult(ExecutorTag tag, F&& func, Args&&... args) -> std::shared_future<std::invoke_result_t<F, Args...>> {
-    Executor* executor = GetOrAddExecutor(tag);
+    Executor* executor = GetExecutorByTag(tag);
     return executor->AddReturnTask(std::forward<F>(func), std::forward<Args>(args)...);
 }
 

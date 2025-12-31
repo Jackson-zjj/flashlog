@@ -3,6 +3,7 @@
 #include <mutex>
 #include <atomic>
 #include <filesystem>
+#include <fstream>
 
 #include "mmap/mmap_aux.h"
 #include "compress/compress.h"
@@ -49,7 +50,7 @@ public:
 
     explicit EffectiveSink(Conf conf);
 
-    ~EffectiveSink() override = default;
+    ~EffectiveSink() override;
 
     void Log(const LogMsg& msg) override;
 
@@ -76,11 +77,12 @@ private:
     std::mutex mtx_;
     std::condition_variable cv_;
     std::filesystem::path file_path_;
+    std::ofstream ofs_;
     std::string client_pub_key_;
     std::string client_pri_key_;
     std::string compress_buf_;
     std::string encrypt_buf_;
-    ExecutorTag executor_tag_{"SingleChannelDisk"};
+    ExecutorTag executor_tag_{10086};
 
     std::unique_ptr<Formatter> formatter_;
     std::unique_ptr<compress::Compression> compress_;

@@ -1,6 +1,5 @@
 #include "effective_sink.h"
 
-#include <fstream>
 #include <chrono>
 #include <vector>
 
@@ -27,7 +26,7 @@ EffectiveSink::EffectiveSink(Conf conf) : conf_(std::move(conf)) {
     if (!std::filesystem::exists(conf_.file_dir)) {
         std::filesystem::create_directories(conf_.file_dir);
     }
-    NEW_STRAND_EXECUTOR(executor_tag_);
+    executor_tag_ = NEW_STRAND_EXECUTOR(executor_tag_);
     formatter_ = std::make_unique<EffectiveFormatter>();
     compress_ = std::make_unique<compress::ZstdCompress>();
     auto keys = crypto::GenECDHKey();
@@ -58,6 +57,13 @@ EffectiveSink::EffectiveSink(Conf conf) : conf_(std::move(conf)) {
     POST_REPEATED_TASK(executor_tag_, conf_.interval, -1, [this] {
         EliminateFiles_();
     });
+}
+
+EffectiveSink::~EffectiveSink() {
+    if (ofs_.is_open()) {
+        ofs_.flush();
+        ofs_.close();
+    }
 }
 
 void EffectiveSink::Log(const LogMsg& msg) {
@@ -159,11 +165,18 @@ void EffectiveSink::CacheToFile_() {
         memcpy(chunk_header.iv, crypto_iv.data(), crypto_iv.size());
     }
     
+    auto cache_path = file_path_;
     auto file_path = GetFilePath_();
-    std::ofstream ofs(file_path, std::ios::binary | std::ios::app);
-    ofs.write(reinterpret_cast<char*>(&chunk_header), sizeof(chunk_header));
-    ofs.write(reinterpret_cast<char*>(slave_mmap_->Data()), chunk_header.size);
-    ofs.close();
+    if (!ofs_.is_open()) {
+        ofs_.open(file_path, std::ios::binary | std::ios::app);
+    } else {
+        if (cache_path != file_path) {
+            ofs_.close();
+            ofs_.open(file_path, std::ios::binary | std::ios::app);
+        }
+    }
+    ofs_.write(reinterpret_cast<char*>(&chunk_header), sizeof(chunk_header));
+    ofs_.write(reinterpret_cast<char*>(slave_mmap_->Data()), chunk_header.size);
 
     slave_mmap_->Clear();
     is_slave_free_.store(true);
