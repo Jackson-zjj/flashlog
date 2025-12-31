@@ -39,7 +39,9 @@ public:
     void Log(LogLevel, LogSourceLoc, StringView) const;
 
 protected: 
-    bool ShouldLog(LogLevel) const;
+    inline bool ShouldLog(LogLevel level) const {
+        return level >= level_; // todo add msg empty check
+    }
 
     void Log_(const LogMsg&) const;
 

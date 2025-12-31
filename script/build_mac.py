@@ -35,7 +35,7 @@ def gene_proto_buf_source_file(out_dir):
     return True
 
 
-def build_mac(config="Release", args=None):
+def build_mac(args=None):
     # todo 编译到debug文件夹中
     # platform_dir = "%s/%s" % (BUILD_DIR_PATH, config)
     platform_dir = "%s" % (BUILD_DIR_PATH)
@@ -57,7 +57,7 @@ def build_mac(config="Release", args=None):
         f"-S {src_dir} "
         f"-B {build_dir} "
         f'-G "Unix Makefiles" '
-        f"-DCMAKE_BUILD_TYPE={config} "
+        f"-DCMAKE_BUILD_TYPE={args.config} "
     )
 
     # 指定vcpkg工具链
@@ -71,6 +71,9 @@ def build_mac(config="Release", args=None):
     if args.test:
         build_cmd += " -DBUILD_STL_TEST=ON"
 
+    if args.clang:
+        build_cmd += " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+
     print("build cmd:" + build_cmd)
     ret = os.system(build_cmd)
     if ret != 0:
@@ -78,7 +81,7 @@ def build_mac(config="Release", args=None):
         return False
 
     os.chdir(build_dir)
-    build_cmd = "cmake --build . --config %s --parallel 8" % (config)
+    build_cmd = "cmake --build . --config %s --parallel 8" % (args.config)
     ret = os.system(build_cmd)
     if ret != 0:
         print("build fail!!!!!!!!!!!!!!!!!!!!")
@@ -91,11 +94,21 @@ def main():
     os.makedirs(BUILD_DIR_PATH, exist_ok=True)
     parser = argparse.ArgumentParser(description="build mac")
     parser.add_argument(
+        "--config", 
+        type=str, 
+        choices=["Debug", "Release"],  
+        default="Debug", 
+        help="compile mode: Debug/Release (default: Debug)"
+    )
+    parser.add_argument(
         "--test", action="store_true", default=False, help="run unittest"
+    )
+    parser.add_argument(
+        "--clang", action="store_true", default=False, help="enable clang-tidy check"
     )
     args = parser.parse_args()
 
-    if not build_mac(config="Debug", args=args):
+    if not build_mac(args=args):
         exit(1)
 
 

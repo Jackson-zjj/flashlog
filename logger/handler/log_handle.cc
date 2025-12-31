@@ -30,10 +30,6 @@ void LogHandle::Log(LogLevel level, LogSourceLoc loc, StringView msg_str) const 
     Log_(msg);
 }
 
-inline bool LogHandle::ShouldLog(LogLevel level) const {
-    return level >= level_; // todo add msg empty check
-}
-
 void LogHandle::Log_(const LogMsg& msg) const {
     for (auto& sink : sinks_) {
         sink->Log(msg);

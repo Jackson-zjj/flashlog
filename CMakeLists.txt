@@ -3,8 +3,12 @@ project(flashlog)
 
 set(CMAKE_CXX_STANDARD 20)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-set(CMAKE_BUILD_TYPE Debug)  # 强制使用 Debug 模式
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")  # -g 生成调试信息，-O0 关闭优化（避免断点错位）
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Enabling AddressSanitizer in Debug mode")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address")
+endif()
 
 add_compile_definitions(DEBUGMODE=1)
 

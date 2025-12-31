@@ -25,8 +25,10 @@ enum class LogLevel {
     kWarn = LOGGER_LEVEL_WARN,
     kError = LOGGER_LEVEL_ERROR,
     kFatal = LOGGER_LEVEL_CRITICAL,
-    kOff = LOGGER_LEVEL_OFF
+    kOff = LOGGER_LEVEL_OFF 
 };
+
+#define LOGGER_ACTIVE_LEVEL LOGGER_LEVEL_TRACE
 
 /// @brief 日志源
 struct LogSourceLoc {
