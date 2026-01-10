@@ -6,13 +6,6 @@ find_package(zstd REQUIRED)
 find_package(cryptopp REQUIRED)
 find_package(Protobuf REQUIRED)
 
-# include_directories(. third_party/cryptopp_cmake third_party/protobuf third_party/fmt/include)
-
-# add_subdirectory(third_party/cryptopp_cmake)
-# add_subdirectory(third_party/protobuf)
-# add_subdirectory(third_party/zstd/build/cmake zstd)
-# add_subdirectory(third_party/zlib)
-
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(UTIL_SRCS utils/file_util.cc utils/sys_util.cc utils/sys_util_linux.cc)
     set(MMAP_SRCS mmap/mmap_aux.cc mmap/mmap_aux_linux.cc)

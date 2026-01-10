@@ -22,16 +22,12 @@ inline LogLevel LogHandle::GetLevel() const {
     return level_;
 }
 
-void LogHandle::Log(LogLevel level, LogSourceLoc& loc, StringView& msg_str) const {
+void LogHandle::Log(LogLevel level, LogSourceLoc loc, StringView msg_str) const {
     if (!ShouldLog(level)) {
         return;
     }
     LogMsg msg(level, loc, msg_str);
     Log_(msg);
-}
-
-inline bool LogHandle::ShouldLog(LogLevel level) const {
-    return level >= level_; // todo add msg empty check
 }
 
 void LogHandle::Log_(const LogMsg& msg) const {

@@ -7,22 +7,23 @@
 
 namespace logger {
     
-void EffectiveFormatter::Format(const LogMsg& msg, MemoryBuf* buf) {
-    EffectiveMsg formatter;
-    formatter.set_level(static_cast<int>(msg.level));
-    formatter.set_timestamp(
+void EffectiveFormatter::Format(const LogMsg& msg, MemoryBuf* dest) {
+    EffectiveMsg effective_msg;
+    effective_msg.set_level(static_cast<int>(msg.level));
+    effective_msg.set_timestamp(
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
             .count());
-    formatter.set_pid(GetProcessId());
-    formatter.set_tid(GetThreadId());
-    formatter.set_line(msg.location.line);
-    formatter.set_file_name(msg.location.file_name.data(), msg.location.file_name.size());
-    formatter.set_func_name(msg.location.func_name.data(), msg.location.func_name.size());
-    formatter.set_log_info(msg.message.data(), msg.message.size());
+    effective_msg.set_pid(GetProcessId());
+    effective_msg.set_tid(GetThreadId());
+    effective_msg.set_line(msg.location.line);
+    effective_msg.set_file_name(msg.location.file_name.data(), msg.location.file_name.size());
+    effective_msg.set_func_name(msg.location.func_name.data(), msg.location.func_name.size());
+    effective_msg.set_log_info(msg.message.data(), msg.message.size());
 
-    size_t len = formatter.ByteSizeLong();
-    buf->reserve(len);
-    formatter.SerializeToArray(buf->data(), len);
+    size_t len = effective_msg.ByteSizeLong();
+    // 序列化写入不会修改缓冲区大小，因此需要提前resize
+    dest->resize(len);
+    effective_msg.SerializeToArray(dest->data(), len);
 }
 
 } // namespace logger

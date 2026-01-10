@@ -7,7 +7,7 @@ namespace crypto {
 
 class AESCrypto final : public Crypto{
 public:
-    AESCrypto(std::string key);
+    AESCrypto(std::string key, std::string iv) : key_(key), iv_(iv) {}
 
     ~AESCrypto() override = default;
 
@@ -15,11 +15,14 @@ public:
 
     static std::string GenerateIV();
 
-    void Encrypto(const void* data, size_t size, std::string& output) override;
+    std::string GetIV();
 
-    std::string Decrypto(const void* data, size_t size) override;
+    void Encrypt(const void* data, size_t size, std::string& output) override;
+
+    std::string Decrypt(const void* data, size_t size) override;
 
 private:
+
     std::string key_;
     std::string iv_;
 

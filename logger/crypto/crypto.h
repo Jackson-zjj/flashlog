@@ -18,9 +18,9 @@ class Crypto {
 public:
     virtual ~Crypto() = default;
 
-    virtual void Encrypto(const void* data, size_t size, std::string& output) = 0;
+    virtual void Encrypt(const void* data, size_t size, std::string& output) = 0;
 
-    virtual std::string Decrypto(const void* data, size_t size) = 0;
+    virtual std::string Decrypt(const void* data, size_t size) = 0;
 
 };  // class Crypto
     

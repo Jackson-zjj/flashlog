@@ -9,7 +9,7 @@ class EffectiveFormatter final : public Formatter {
 public:
     ~EffectiveFormatter() override = default;
 
-    void Format(const LogMsg& msg, MemoryBuf* buf);
+    void Format(const LogMsg& msg, MemoryBuf* buf) override;
 
 };  // class EffectiveFormatter
 

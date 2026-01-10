@@ -5,26 +5,26 @@
 
 #ifdef DEBUGMODE
 // 内部
-#define LOG_DEBUG(...) \
+#define DEBUG(...) \
     fmt::print("[DEBUG] [{}:{}] {} {}\n", __FILE__, __LINE__, std::chrono::system_clock::now(), fmt::format(__VA_ARGS__))
 
-#define LOG_INFO(...) \
+#define INFO(...) \
     fmt::print("[INFO] [{}:{}] {} {}\n", __FILE__, __LINE__, std::chrono::system_clock::now(), fmt::format(__VA_ARGS__))
 
-#define LOG_WARNING(...) \
+#define WARNING(...) \
     fmt::print("[WARNING] [{}:{}] {} {}\n", __FILE__, __LINE__, std::chrono::system_clock::now(), fmt::format(__VA_ARGS__))
 
-#define LOG_ERROR(...) \
+#define ERROR(...) \
     fmt::print("[ERROR] [{}:{}] {} {}\n", __FILE__, __LINE__, std::chrono::system_clock::now(), fmt::format(__VA_ARGS__))
 
 #else
 // 外部
-#define LOG_DEBUG(...)
+#define DEBUG(...)
 
-#define LOG_INFO(...)
+#define INFO(...)
 
-#define LOG_WARNING(...)
+#define WARNING(...)
 
-#define LOG_ERROR(...)
+#define ERROR(...)
 
 #endif

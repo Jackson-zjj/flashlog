@@ -73,9 +73,9 @@ uint8_t* MMapAux::Data() const {
 
 double MMapAux::GetRatio() const {
     if (!isValid_()) {
-        return 0;
+        return 0.0;
     }
-    return static_cast<double>(Size() / (Capacity_() - sizeof(MMapHeader)));
+    return static_cast<double>(Size()) / (Capacity_() - sizeof(MMapHeader));
 }
 
 static size_t GetValidCapacity(size_t size) {
@@ -89,6 +89,7 @@ void MMapAux::Reserve_(size_t new_capacity) {
         return;
     }
     Unmap_();
+    // 内存映射
     TryMap_(real_capacity); // todo check mmap result
     capacity_ = real_capacity;
 }

@@ -5,7 +5,7 @@
 namespace logger {
 namespace fs {
 
-size_t GetFileSize(std::filesystem::path&);
+size_t GetFileSize(const std::filesystem::path&);
 
 }   // namespace fs
 }   // namespace logger

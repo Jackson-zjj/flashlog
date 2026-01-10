@@ -10,13 +10,25 @@ namespace logger {
 using StringView = std::string_view;
 using MemoryBuf = std::string;
 
+#define LOGGER_LEVEL_TRACE 0
+#define LOGGER_LEVEL_DEBUG 1
+#define LOGGER_LEVEL_INFO 2
+#define LOGGER_LEVEL_WARN 3
+#define LOGGER_LEVEL_ERROR 4
+#define LOGGER_LEVEL_CRITICAL 5
+#define LOGGER_LEVEL_OFF 6
+
 enum class LogLevel {
-    kDebug,
-    kInfo,
-    kWarn,
-    kError,
-    kOff
+    kTrace = LOGGER_LEVEL_TRACE,
+    kDebug = LOGGER_LEVEL_DEBUG,
+    kInfo = LOGGER_LEVEL_INFO,
+    kWarn = LOGGER_LEVEL_WARN,
+    kError = LOGGER_LEVEL_ERROR,
+    kFatal = LOGGER_LEVEL_CRITICAL,
+    kOff = LOGGER_LEVEL_OFF 
 };
+
+#define LOGGER_ACTIVE_LEVEL LOGGER_LEVEL_TRACE
 
 /// @brief 日志源
 struct LogSourceLoc {

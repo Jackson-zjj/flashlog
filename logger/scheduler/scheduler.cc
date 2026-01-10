@@ -4,24 +4,28 @@
 
 namespace logger {
 
-void Scheduler::NewTaskExecutor(ExecutorTag tag, int thread_count) {
+ExecutorTag Scheduler::NewTaskExecutor(ExecutorTag tag, int thread_count) {
     std::unique_lock<std::mutex> lock(mtx_);
-    if (executor_dirc_.find(tag) != executor_dirc_.end()) {
-        return;
+    while (executor_dirc_.find(tag) != executor_dirc_.end()) {
+        tag = GetNextExecutorTag_(tag);
     }
     executor_dirc_[tag] = std::make_unique<Executor>(thread_count);
     executor_dirc_[tag]->Start();
+    return tag;
 }
 
 void Scheduler::CancelRepeatedTask(uint64_t repeated_id) {
     timer_.CancelRepeatedTask(repeated_id);
 }
 
-Executor* Scheduler::GetOrAddExecutor(ExecutorTag tag) {
+ExecutorTag Scheduler::GetNextExecutorTag_(ExecutorTag tag) {
+    return ++tag;
+}
+
+Executor* Scheduler::GetExecutorByTag(ExecutorTag tag) {
     std::unique_lock<std::mutex> lock(mtx_);
     if (executor_dirc_.find(tag) == executor_dirc_.end()) {
-        lock.unlock();
-        NewTaskExecutor(tag, 1);
+        throw std::runtime_error("Scheduler::GetExecutorByTag: can't find excutor");
     }
     return executor_dirc_[tag].get();
 }
@@ -64,7 +68,7 @@ void Scheduler::Timer::Run_() {
                 s.task();
             }
             catch(const std::exception& e) {
-                LOG_ERROR("task run error[{}] \n", e.what());
+                ERROR("task run error[{}] \n", e.what());
             }
             
         }

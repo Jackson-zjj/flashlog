@@ -15,10 +15,6 @@ namespace crypto {
 
 using CryptoPP::byte;
 
-AESCrypto::AESCrypto(std::string key) : key_(key) {
-    iv_ = GenerateIV();
-}
-
 std::string AESCrypto::GenerateKey() {
     CryptoPP::AutoSeededRandomPool random;
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH];
@@ -34,7 +30,11 @@ std::string AESCrypto::GenerateIV() {
     return BinaryKeyToHex(std::string(reinterpret_cast<const char*>(iv), sizeof(iv)));
 }
 
-void AESCrypto::Encrypto(const void* data, size_t size, std::string& output) {
+std::string AESCrypto::GetIV() {
+    return iv_;
+}
+
+void AESCrypto::Encrypt(const void* data, size_t size, std::string& output) {
     CryptoPP::AES::Encryption aes_encryption(reinterpret_cast<const byte*>(key_.data()), key_.size());
     CryptoPP::CBC_Mode_ExternalCipher::Encryption cbc_encryption(aes_encryption, reinterpret_cast<const byte*>(iv_.data()));
 
@@ -43,7 +43,7 @@ void AESCrypto::Encrypto(const void* data, size_t size, std::string& output) {
     stf_encryptor.MessageEnd();
 }
 
-std::string AESCrypto::Decrypto(const void* data, size_t size) {
+std::string AESCrypto::Decrypt(const void* data, size_t size) {
     std::string decryptedtext;
     CryptoPP::AES::Decryption aes_decryption(reinterpret_cast<const byte*>(key_.data()), key_.size());
     CryptoPP::CBC_Mode_ExternalCipher::Decryption cbc_decryption(aes_decryption, reinterpret_cast<const byte*>(iv_.data()));

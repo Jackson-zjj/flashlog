@@ -13,7 +13,7 @@ namespace logger {
 
 using Executor = logger::ThreadPool;
 using ExecutorPtr = std::unique_ptr<Executor>;
-using ExecutorTag = std::string_view;
+using ExecutorTag = uint64_t;
 
 /// @brief 任务调度器（管理任务执行器）
 class Scheduler {
@@ -31,7 +31,7 @@ public:
     }
 
     /// @brief 创建执行器
-    void NewTaskExecutor(ExecutorTag tag, int thread_count = 1);
+    ExecutorTag NewTaskExecutor(ExecutorTag tag, int thread_count = 1);
 
     /// @brief 提交任务
     template <typename F, typename... Args>
@@ -111,7 +111,8 @@ private:
 
     // Scheduler private
     Scheduler() = default;
-    Executor* GetOrAddExecutor(ExecutorTag);
+    ExecutorTag GetNextExecutorTag_(ExecutorTag);
+    Executor* GetExecutorByTag(ExecutorTag);
 
     std::mutex mtx_;
     std::unordered_map<ExecutorTag, ExecutorPtr> executor_dirc_;
@@ -120,30 +121,55 @@ private:
 
 template <typename F, typename... Args>
 void Scheduler::PostTask(ExecutorTag tag, F&& func, Args&&... args) {
-    Executor* executor = GetOrAddExecutor(tag);
+    Executor* executor = GetExecutorByTag(tag);
     executor->AddTask(std::forward<F>(func), std::forward<Args>(args)...);
 }
 
 template <typename F, typename... Args>
 auto Scheduler::PostTaskAndGetResult(ExecutorTag tag, F&& func, Args&&... args) -> std::shared_future<std::invoke_result_t<F, Args...>> {
-    Executor* executor = GetOrAddExecutor(tag);
+    Executor* executor = GetExecutorByTag(tag);
     return executor->AddReturnTask(std::forward<F>(func), std::forward<Args>(args)...);
 }
 
 template <typename Rep, typename Period, typename F, typename... Args>
 void Scheduler::PostDelayTask(ExecutorTag tag, const std::chrono::duration<Rep, Period>& delta, F&& func, Args&&... args) {
     timer_.Start();
-    auto task = std::bind(&Scheduler::PostTask, this, std::move(tag), std::forward<F>(func), std::forward<Args>(args)...);
+    // auto task = std::bind(&Scheduler::PostTask, this, std::move(tag), std::forward<F>(func), std::forward<Args>(args)...);
+    auto task = [this, tag = std::move(tag), func = std::forward<F>(func), args_tuple = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+        // 展开参数包调用PostTask
+        std::apply([this, &tag, &func](auto&&... args) {
+            this->PostTask(std::move(tag), std::forward<F>(func), std::forward<decltype(args)>(args)...);
+        }, std::move(args_tuple));
+    };
     timer_.PostDelayedTask(std::move(task), std::chrono::duration_cast<std::chrono::microseconds>(delta));
 }
 
 template <typename Rep, typename Period, typename F, typename... Args>
 void Scheduler::PostRepeatedTask(ExecutorTag tag, const std::chrono::duration<Rep, Period>& delta, uint64_t repeat_num, F&& func, Args&&... args) {
     timer_.Start();
-    auto task = std::bind(&Scheduler::PostTask, this, std::move(tag), std::forward<F>(func), std::forward<Args>(args)...);
+    // 模板函数不能被bind绑定，除非显式实例化
+    // auto task = std::bind(&Scheduler::PostTask, this, std::move(tag), std::forward<F>(func), std::forward<Args>(args)...);
+    auto task = [this, tag = std::move(tag), func = std::forward<F>(func), args_tuple = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+        // 展开参数包调用PostTask
+        std::apply([this, &tag, &func](auto&&... args) {
+            this->PostTask(std::move(tag), std::forward<F>(func), std::forward<decltype(args)>(args)...);
+        }, std::move(args_tuple));
+    };
     timer_.PostRepeatedTask(std::move(task), std::chrono::duration_cast<std::chrono::microseconds>(delta), repeat_num);
 }
 
 }   // namespace logger
 
 #define SCHEDULER logger::Scheduler::GetInstance()
+
+// 新建串型化任务执行器
+#define NEW_STRAND_EXECUTOR(tag) SCHEDULER.NewTaskExecutor(tag)
+
+// 提交任务
+#define POST_TASK(tag, task) SCHEDULER.PostTask(tag, task)
+
+// 提交重复型任务
+#define POST_REPEATED_TASK(tag, delta, repeat_num, task) SCHEDULER.PostRepeatedTask(tag, delta, repeat_num, task)
+
+// 等待任务完成
+#define WAIT_TASKS_COMPLETED(tag) SCHEDULER.PostTaskAndGetResult(tag, [] {}).wait()

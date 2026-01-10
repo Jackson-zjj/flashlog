@@ -5,6 +5,7 @@
 
 namespace logger {
 
+/// @brief mmap内存映射类
 class MMapAux {
 public:
     using fpath = std::filesystem::path;

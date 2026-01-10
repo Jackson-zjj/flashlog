@@ -3,7 +3,8 @@
 #include <ratio>
 
 namespace logger {
-
+namespace space {
+    
 template <typename Rep, typename Capacity = std::ratio<1>>
 class space;
 
@@ -103,4 +104,5 @@ using MB = space<size_t, std::ratio<1024L * 1024, 1>>;
 using GB = space<size_t, std::ratio<1024L * 1024 * 1024, 1>>;
 using TB = space<size_t, std::ratio<1024L * 1024 * 1024 * 1024, 1>>;
 
+}   // namespace space
 }   // namespace logger
