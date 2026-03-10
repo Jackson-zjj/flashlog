@@ -1,10 +1,18 @@
+
 #include <iostream>
 #include <chrono>
 #include <thread>
 
 #include "sinks/console_sink.h"
+#include "sinks/simple_sink.h"
+#include "sinks/mmap_sink.h"
+#include "sinks/protobuf_sink.h"
+#include "sinks/compress_sink.h"
+#include "sinks/crypto_sink.h"
+#include "sinks/async_sink.h"
 #include "sinks/effective_sink.h"
 #include "handler/log_variadic_handle.h"
+#include "logger.h"
 
 std::string GenerateRandomString(int length) {
   std::string str;
@@ -21,10 +29,10 @@ int main() {
     std::shared_ptr<logger::LogSink> sink = std::make_shared<logger::ConsoleSink>();
     auto handler = std::make_shared<logger::VariadicLogHandle>(sink);
     handler->Log(logger::LogLevel::kInfo, "Hello, World!");
+    LOGGER_INIT(handler);
+    LOG_INFO("this is macro function");
 
-
-    std::cout << "---- effective sink ----" << std::endl;
-    logger::EffectiveSink::Conf conf;
+    logger::detail::Conf conf;
     conf.file_dir = "/Users/jackson/MyProject/flashlog/test";
     conf.file_name = "loggerdemo";
     conf.server_pub_key =
@@ -32,31 +40,25 @@ int main() {
         "FC7EDB544B869F039C";
 
     {
-        std::shared_ptr<logger::LogSink> effective_sink = std::make_shared<logger::EffectiveSink>(conf);
-        logger::LogHandle handle({effective_sink});
+        std::cout << "---- file sink ----" << std::endl;
+        // std::shared_ptr<logger::LogSink> file_sink = std::make_shared<logger::SimpleSink>(conf);
+        // std::shared_ptr<logger::LogSink> file_sink = std::make_shared<logger::MMapSink>(conf);
+        // std::shared_ptr<logger::LogSink> file_sink = std::make_shared<logger::ProtobufSink>(conf);
+        // std::shared_ptr<logger::LogSink> file_sink = std::make_shared<logger::CompressSink>(conf);
+        // std::shared_ptr<logger::LogSink> file_sink = std::make_shared<logger::CryptoSink>(conf);
+        // std::shared_ptr<logger::LogSink> file_sink = std::make_shared<logger::AsyncSink>(conf);
+        std::shared_ptr<logger::LogSink> file_sink = std::make_shared<logger::EffectiveSink>(conf);
+        logger::LogHandle handle({file_sink});
+
         std::string str = GenerateRandomString(2000);
         auto begin = std::chrono::system_clock::now();
-
-        auto task = [&]() {
-            for (int i = 0; i < 500000; ++i) {
-                // if (i % 100000 == 0) {
-                //     std::cout << "i " << i << std::endl;
-                // }
-                handle.Log(logger::LogLevel::kInfo, logger::LogSourceLoc(), str);
+        for (int i = 0; i < 500000; ++i) {
+            if (i % 100000 == 0) {
+                std::cout << "i " << i << std::endl;
             }
-            effective_sink->Flush();
-        };
-        std::vector<std::thread*> threads;
-        for (int i = 0; i < 3; ++i) {
-            std::thread* th = new std::thread((task));
-            threads.emplace_back(th);
+            handle.Log(logger::LogLevel::kInfo, logger::LogSourceLoc(), str);
         }
-        for (auto& th : threads) {
-            if (th->joinable()) {
-                th->join();
-            }
-        }
-
+        handle.Flush();
         auto end = std::chrono::system_clock::now();
         std::chrono::milliseconds diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
         std::cout << "logger time count: " << diff.count() << "ms" << std::endl;

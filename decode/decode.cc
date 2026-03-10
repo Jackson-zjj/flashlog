@@ -96,7 +96,7 @@ void DecodeFile(const std::string& file_path, const std::string& pri_key, const 
 
 
 int main(int argc, char* argv[]) {
-#if true
+#if false
     if (argc != 4) {
         std::cerr << "Usage: ./decode <file_path> <pri_key> <output_file>" << std::endl;
         return 1;
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     std::string pri_key = argv[2];
     std::string output_file_path = argv[3];
 #else
-    std::string input_file_path = "/Users/jackson/MyProject/flashlog/test/loggerdemo_20251230102855.log";
+    std::string input_file_path = "/Users/jackson/MyProject/flashlog/test/loggerdemo_20251231131616.log";
     std::string pri_key = "FAA5BBE9017C96BF641D19D0144661885E831B5DDF52539EF1AB4790C05E665E";
     std::string output_file_path = "/Users/jackson/MyProject/flashlog/test/log.txt";
 #endif

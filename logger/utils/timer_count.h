@@ -15,7 +15,7 @@ public:
     ~TimerCount() {
         auto end = std::chrono::steady_clock::now();
         auto diff = std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
-        INFO("TimerCount = {}", diff);
+        INFO("{} time count = {}us", info_, diff.count());
     }
 
 private:
