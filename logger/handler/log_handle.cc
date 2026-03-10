@@ -36,5 +36,11 @@ void LogHandle::Log_(const LogMsg& msg) const {
     }
 }
 
+void LogHandle::Flush() const {
+    for (auto& sink : sinks_) {
+        sink->Flush();
+    }
+}
+
 
 }   // namespace logger

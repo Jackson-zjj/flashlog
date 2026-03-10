@@ -18,7 +18,7 @@ namespace logger {
 
 constexpr char kFileSuffix[] = ".log";
 
-EffectiveSink::EffectiveSink(Conf conf) : conf_(std::move(conf)) {
+EffectiveSink::EffectiveSink(detail::Conf conf) : conf_(std::move(conf)) {
     INFO("EffectiveSink: file_dir={}, file_name={}, server_pub_key={}, interval={}, single_size={}, total_size={}",
            conf_.file_dir.string(), conf_.file_name, conf_.server_pub_key, conf_.interval.count(), conf_.single_size.count(),
            conf_.total_size.count());
@@ -45,12 +45,12 @@ EffectiveSink::EffectiveSink(Conf conf) : conf_(std::move(conf)) {
 
     if (!slave_mmap_->Empty()) {
         is_slave_free_.store(false);
-        PrepareToFile_();
+        AsyncCacheToFile_();
     }
     if (!master_mmap_->Empty()) {
         WAIT_TASKS_COMPLETED(executor_tag_);
         SwapCache_();
-        PrepareToFile_();
+        AsyncCacheToFile_();
     }
 
     // 淘汰策略
@@ -68,6 +68,7 @@ EffectiveSink::~EffectiveSink() {
 
 void EffectiveSink::Log(const LogMsg& msg) {
     static thread_local MemoryBuf format_buf;
+    format_buf.clear();
     formatter_->Format(msg, &format_buf);
 
     if (master_mmap_->Empty()) {
@@ -98,7 +99,7 @@ void EffectiveSink::Log(const LogMsg& msg) {
 
     if (NeedWriteToFile_()) {
         SwapCache_();
-        PrepareToFile_();
+        AsyncCacheToFile_();
     }
 }
 
@@ -107,12 +108,12 @@ void EffectiveSink::SetFormatter(std::unique_ptr<Formatter> formatter) {
 }
 
 void EffectiveSink::Flush() {
-    TIMER_COUNT("Flush");
-    PrepareToFile_();
+    TIMER_COUNT("EffectiveSink::Flush");
+    AsyncCacheToFile_();
     WAIT_TASKS_COMPLETED(executor_tag_);
 
     SwapCache_();
-    PrepareToFile_();
+    AsyncCacheToFile_();
     WAIT_TASKS_COMPLETED(executor_tag_);
 }
 
@@ -137,14 +138,13 @@ void EffectiveSink::SwapCache_() {
     }
 }
 
-void EffectiveSink::PrepareToFile_() {
+void EffectiveSink::AsyncCacheToFile_() {
     POST_TASK(executor_tag_, [this]{
         CacheToFile_();
     });
 }
 
 void EffectiveSink::CacheToFile_() {
-    TIMER_COUNT("CacheToFile_");
     if (is_slave_free_.load()) {
         return;
     }
@@ -153,9 +153,7 @@ void EffectiveSink::CacheToFile_() {
         is_slave_free_.store(true);
         return;
     }
-    if (slave_mmap_->Size() > space::space_cast<space::B>(conf_.single_size).count() * 1.5) {
-        fmt::print("too big! \n");
-    }
+    TIMER_COUNT("EffectiveSink::CacheToFile_");
     
     detail::ChunkHeader chunk_header;
     chunk_header.size = slave_mmap_->Size();

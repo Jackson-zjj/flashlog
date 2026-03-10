@@ -38,6 +38,8 @@ public:
 
     void Log(LogLevel, LogSourceLoc, StringView) const;
 
+    void Flush() const;
+
 protected: 
     inline bool ShouldLog(LogLevel level) const {
         return level >= level_; // todo add msg empty check

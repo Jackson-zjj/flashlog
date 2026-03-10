@@ -68,6 +68,7 @@ uint8_t* MMapAux::Data() const {
     if (!isValid_()) {
         return nullptr;
     }
+    // uint8_t 原始字节流的通用指针
     return static_cast<uint8_t*>(handle_) + sizeof(MMapHeader);
 }
 
@@ -79,6 +80,7 @@ double MMapAux::GetRatio() const {
 }
 
 static size_t GetValidCapacity(size_t size) {
+    // 向上取整
     size_t page_size = GetPageSize();
     return (size + page_size - 1) / page_size * page_size;
 }
