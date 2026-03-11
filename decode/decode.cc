@@ -105,8 +105,9 @@ int main(int argc, char* argv[]) {
     std::string pri_key = argv[2];
     std::string output_file_path = argv[3];
 #else
-    std::string input_file_path = "/Users/jackson/MyProject/flashlog/test/loggerdemo_20251231131616.log";
     std::string pri_key = "FAA5BBE9017C96BF641D19D0144661885E831B5DDF52539EF1AB4790C05E665E";
+    // todd 修改参数
+    std::string input_file_path = "/Users/jackson/MyProject/flashlog/test/loggerdemo_20260311053351.log";
     std::string output_file_path = "/Users/jackson/MyProject/flashlog/test/log.txt";
 #endif
     
